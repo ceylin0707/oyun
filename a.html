@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Akıcı Kutu Toplama</title>
+</head>
+<body style="text-align: center;">
+<h1>sınırsız puan kasma</h1>
+    <h2>Puan: <span id="skor">0</span></h2>
+    <canvas id="c" width="400" height="400" style="border:2px solid black; background: #fafafa;"></canvas>
+
+    <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+
+        let x = 175, y = 300, puan = 0;
+        let hedefX = 100, hedefY = 50;
+        let sag = false, sol = false, yukari = false, asagi = false;
+
+        function draw() {
+            ctx.clearRect(0, 0, 400, 400);
+
+            
+            if (sag) x += 5;
+            if (sol) x -= 5;
+            if (yukari) y -= 5;
+            if (asagi) y += 5;
+
+            
+            ctx.fillStyle = "black";
+            ctx.fillRect(hedefX, hedefY, 40, 40);
+
+            
+            ctx.fillStyle = "pink";
+            ctx.fillRect(x, y, 40, 40);
+
+           
+            
+                puan = puan + 1;
+                document.getElementById("skor").innerHTML = puan;
+                
+                
+                hedefX = Math.random() * 350;
+                hedefY = Math.random() * 350;
+            
+
+            requestAnimationFrame(draw);
+        }
+
+        // TUŞLAR
+        document.addEventListener("keydown", (e) => {
+            if(e.key == "ArrowRight") sag = true;
+            if(e.key == "ArrowLeft")  sol = true;
+            if(e.key == "ArrowUp")    yukari = true;
+            if(e.key == "ArrowDown")  asagi = true;
+        });
+        document.addEventListener("keyup", (e) => {
+            if(e.key == "ArrowRight") sag = false;
+            if(e.key == "ArrowLeft")  sol = false;
+            if(e.key == "ArrowUp")    yukari = false;
+            if(e.key == "ArrowDown")  asagi = false;
+        });
+
+        draw();
+    </script>
+    <link rel="stylesheet" href="index.html">
+    <p> <a href="index.html">geri dön</a></p>
+    
+</body>
+</html>
