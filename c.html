@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Firebase Bağlantısı</title>
+</head>
+<body style="background-color: pink;">
+
+    <p><a href="index.html">geri dön</a></p>
+
+    <input type="text" id="adSoyad" placeholder="AD SOYAD"> <br><br>
+    <input type="email" id="email" placeholder="EMAİL"><br><br>
+    <input type="text" id="takim" placeholder="TUTTUĞU TAKIM"><br><br>
+    
+    <button id="kaydetButonu">kaydet</button>
+
+    <script type="module">
+        // 1. Firebase Kütüphanelerini İnternetten Bağlıyoruz 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+        // 2. Senin Özel Firebase Bilgilerin
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8jBAsc3oZDnp9jyanQ6ocpqWi0oAzMSM",
+            authDomain: "ornekproje-69d22.firebaseapp.com",
+            projectId: "ornekproje-69d22",
+            storageBucket: "ornekproje-69d22.firebasestorage.app",
+            messagingSenderId: "831183825516",
+            appId: "1:831183825516:web:9a0573216b7ec4fddfc649",
+            measurementId: "G-FNENLXWB67"
+        };
+
+        // 3. Firebase'i Başlatıyoruz
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        // --- BUNDAN SONRASI SENİN KENDİ OYUN KODLARIN ---
+        // Inputları ve butonu düz mantıkla JavaScript'e tanıtıyoruz:
+        const adInput = document.getElementById("adSoyad");
+        const emailInput = document.getElementById("email");
+        const takimInput = document.getElementById("takim");
+        const buton = document.getElementById("kaydetButonu");
+
+        // Tıklama olaylarını veya diğer kodlarını buraya yazmaya devam edebilirsin...
+        
+    </script>
+
+</body>
+</html>
