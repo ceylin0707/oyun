@@ -1,83 +1,78 @@
-<body style="background-color: pink;"></body>
-<p> <a href="index.html">geri dön</a></p>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Üyelik Kaydı</title>
+</head>
+<body style="background-color: pink;">
 
-<!-- Giriş Alanları -->
-<input type="text" id="adSoyad" placeholder="AD SOYAD"> <br><br>
-<input type="email" id="email" placeholder="EMAİL"><br><br>
-<input type="text" id="takim" placeholder="TUTTUĞU TAKIM"><br><br>
-<button id="kaydetButonu">kaydet</button>
+    <p><a href="Index.html">geri dön</a></p>
 
-<hr style="margin-top: 30px; border: 1px solid black;">
+    <input type="text" id="adSoyad" placeholder="AD SOYAD"><br><br>
+    <input type="email" id="email" placeholder="EMAİL"><br><br>
+    <input type="text" id="takim" placeholder="TUTTUĞU TAKIM"><br><br>
+    
+    <button id="kaydetButonu">kaydet</button>
 
-<!-- SİSTEMDEKİ ADLARI GÖRECEĞİN YER BURASI -->
-<h3>SİSTEMDEKİ KAYITLI KİŞİLER</h3>
-<div id="kayitliKullanicilar Listesi" style="background-color: white; padding: 10px; min-height: 50px; border-radius: 5px;">
-    <!-- İsimler buraya otomatik olarak alt alta dökülecek -->
-</div>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+      import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-<!-- Firebase'in en sorunsuz çalışan kütüphanelerini bağlıyoruz -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<script>
-    // Senin projene ait özel bilgiler
-    var firebaseConfig = {
-        apiKey: "AIzaSyB8jBAsc3oZDnp9jyanQ6ocpqWi0oAzMSM",
+      // Sizin Firebase yapılandırma bilgileriniz
+      const firebaseConfig = {
+        apiKey: "AIzaSyB8jBASc3oZDnp9jyanQ6ocpqWi0oAzMSM",
         authDomain: "ornekproje-69d22.firebaseapp.com",
         projectId: "ornekproje-69d22",
         storageBucket: "ornekproje-69d22.firebasestorage.app",
         messagingSenderId: "831183825516",
-        appId: "1:831183825516:web:9a0573216b7ec4fddfc649"
-    };
+        appId: "1:831183825516:web:9a0573216b7ec4fddfc649",
+        measurementId: "G-FNENLXWB67"
+      };
 
-    // Firebase'i başlatıyoruz
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+      // Firebase ve Veritabanı Servisini Başlatıyoruz
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-    // Elemanları düz mantık seçiyoruz
-    var adInput = document.getElementById("adSoyad");
-    var emailInput = document.getElementById("email");
-    var takimInput = document.getElementById("takim");
-    var buton = document.getElementById("kaydetButonu");
-    var listeAlani = document.getElementById("kayitliKullanicilar Listesi");
+      // HTML kutularını ve butonunu JavaScript'e tanıtıyoruz
+      const adSoyadInput = document.getElementById('adSoyad');
+      const emailInput = document.getElementById('email');
+      const takimInput = document.getElementById('takim');
+      const kaydetButon = document.getElementById('kaydetButonu');
 
-    // BUTONA TIKLANINCA VERİYİ VERİTABANINA GÖNDERME
-    buton.addEventListener("click", function() {
-        var girilenAd = adInput.value;
-        var girilenEmail = emailInput.value;
-        var girilenTakim = takimInput.value;
+      // Kaydet butonuna tıklandığında çalışacak olan işlem
+      kaydetButon.addEventListener('click', async () => {
+        const adSoyad = adSoyadInput.value;
+        const email = emailInput.value;
+        const takim = takimInput.value;
 
-        if (girilenAd === "" || girilenEmail === "" || girilenTakim === "") {
+        // Alanlar boş mu kontrol ediyoruz
+        if(!adSoyad || !email || !takim) {
             alert("Lütfen tüm alanları doldurun!");
             return;
         }
 
-        db.collection("kullanicilar").add({
-            ad: girilenAd,
-            email: girilenEmail,
-            takim: girilenTakim
-        })
-        .then(function() {
-            alert("Harika! Bilgiler Firebase'e başarıyla uçtu!");
-            adInput.value = "";
-            emailInput.value = "";
-            takimInput.value = "";
-        })
-        .catch(function(hata) {
-            alert("Gönderilemedi! Hata: " + hata.message);
-        });
-    });
+        try {
+          // "uyeler" adında bir koleksiyon oluşturup verileri Firebase'e gönderiyoruz
+          const docRef = await addDoc(collection(db, "uyeler"), {
+            isim: adSoyad,
+            eposta: email,
+            takim: takim,
+            tarih: new Date()
+          });
+          
+          alert("Kullanıcı başarıyla Firebase'e kaydedildi!");
+          
+          // Kutuları temizle
+          adSoyadInput.value = "";
+          emailInput.value = "";
+          takimInput.value = "";
 
-    // VERİTABANINDAKİ ADLARI CANLI OLARAK EKRANA GETİRME
-    // Firebase paneline girmeden, verileri doğrudan bu pembe sayfada listeler
-    db.collection("kullanicilar").onSnapshot(function(snapshot) {
-        // Listeyi önce temizle ki üst üste binmesinler
-        listeAlani.innerHTML = ""; 
-        
-        snapshot.forEach(function(doc) {
-            var veri = doc.data();
-            // Her bir kişi için düz bir yazı alanı oluşturup ekrana basıyoruz
-            listeAlani.innerHTML += "<p><b>Ad:</b> " + veri.ad + " | <b>Takım:</b> " + veri.takim + "</p>";
-        });
-    });
-</script>
+        } catch (error) {
+          console.error("Hata oluştu:", error);
+          alert("Veri kaydedilirken hata oluştu: " + error.message);
+        }
+      });
+    </script>
+
+</body>
+</html>
