@@ -1,84 +1,65 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>Firebase Kayıt Sistemi</title>
-</head>
-<body style="background-color: pink;">
+<body style="background-color: pink;"></body>
+<p> <a href="index.html">geri dön</a></p>
 
-    <p><a href="index.html">geri dön</a></p>
+<!-- Giriş Alanları -->
+<input type="text" id="adSoyad" placeholder="AD SOYAD"> <br><br>
+<input type="email" id="email" placeholder="EMAİL"><br><br>
+<input type="text" id="takim" placeholder="TUTTUĞU TAKIM"><br><br>
+<button id="kaydetButonu">kaydet</button>
 
-    <!-- Giriş Alanları -->
-    <input type="text" id="adSoyad" placeholder="AD SOYAD"> <br><br>
-    <input type="email" id="email" placeholder="EMAİL"><br><br>
-    <input type="text" id="takim" placeholder="TUTTUĞU TAKIM"><br><br>
-    
-    <button id="kaydetButonu">kaydet</button>
+<script type="module">
+    // 1. Firebase Ana Kütüphanesini VE Veritabanı (Firestore) Kütüphanesini bağlıyoruz
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <script type="module">
-        // 1. Firebase Ana Kütüphanesini ve Veritabanı (Firestore) Kütüphanesini Bağlıyoruz
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-        // Veritabanına ekleme yapmak için gerekli fonksiyonları çağırıyoruz:
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // 2. Senin Özel Firebase Bilgilerin
+    const firebaseConfig = {
+        apiKey: "AIzaSyB8jBAsc3oZDnp9jyanQ6ocpqWi0oAzMSM",
+        authDomain: "ornekproje-69d22.firebaseapp.com",
+        projectId: "ornekproje-69d22",
+        storageBucket: "ornekproje-69d22.firebasestorage.app",
+        messagingSenderId: "831183825516",
+        appId: "1:831183825516:web:9a0573216b7ec4fddfc649",
+        measurementId: "G-FNENLXWB67"
+    };
 
-        // 2. Senin Özel Firebase Bilgilerin
-        const firebaseConfig = {
-            apiKey: "AIzaSyB8jBAsc3oZDnp9jyanQ6ocpqWi0oAzMSM",
-            authDomain: "ornekproje-69d22.firebaseapp.com",
-            projectId: "ornekproje-69d22",
-            storageBucket: "ornekproje-69d22.firebasestorage.app",
-            messagingSenderId: "831183825516",
-            appId: "1:831183825516:web:9a0573216b7ec4fddfc649",
-            measurementId: "G-FNENLXWB67"
-        };
+    // 3. Firebase'i ve Veritabanını Başlatıyoruz
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app); // Veritabanını kodla çalışmaya zorluyoruz
 
-        // 3. Firebase'i ve Veritabanını Başlatıyoruz
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app); // Veritabanı bağlantımız hazır!
+    // 4. Elemanları düz mantık seçiyoruz
+    const adInput = document.getElementById("adSoyad");
+    const emailInput = document.getElementById("email");
+    const takimInput = document.getElementById("takim");
+    const buton = document.getElementById("kaydetButonu");
 
-        // 4. HTML Elemanlarını JavaScript'e Tanıtıyoruz (Düz mantık, manuel)
-        const adInput = document.getElementById("adSoyad");
-        const emailInput = document.getElementById("email");
-        const takimInput = document.getElementById("takim");
-        const buton = document.getElementById("kaydetButonu");
+    // 5. Butona tıklanınca veriyi gönderiyoruz
+    buton.addEventListener("click", async function() {
+        const girilenAd = adInput.value;
+        const girilenEmail = emailInput.value;
+        const girilenTakim = takimInput.value;
 
-        // 5. Butona Tıklanınca Çalışacak Kodlar
-        buton.addEventListener("click", async function() {
-            // Kutuların içine yazılan güncel yazıları alıyoruz
-            const girilenAd = adInput.value;
-            const girilenEmail = emailInput.value;
-            const girilenTakim = takimInput.value;
+        if (girilenAd === "" || girilenEmail === "" || girilenTakim === "") {
+            alert("Lütfen tüm alanları doldurun!");
+            return;
+        }
 
-            // Eğer kutulardan biri bile boşsa kullanıcıyı uyaralım
-            if (girilenAd === "" || girilenEmail === "" || girilenTakim === "") {
-                alert("Lütfen tüm alanları doldurun!");
-                return; // Kodun aşağıya devam etmesini engeller
-            }
+        try {
+            // Veritabanına "kullanicilar" başlığı altında manuel ekleme yapıyoruz
+            await addDoc(collection(db, "kullanicilar"), {
+                ad: girilenAd,
+                email: girilenEmail,
+                takim: girilenTakim
+            });
 
-            // Bilgileri Firebase'e gönderme kısmı
-            try {
-                // "kullanicilar" adında bir tablo (koleksiyon) oluşturup içine yazıyoruz
-                await addDoc(collection(db, "kullanicilar"), {
-                    ad: girilenAd,
-                    email: girilenEmail,
-                    takim: girilenTakim
-                });
-
-                // Veri başarıyla gidince kutuları temizleyelim
-                adInput.value = "";
-                emailInput.value = "";
-                takimInput.value = "";
-
-                alert("Bilgiler başarıyla Firebase'e kaydedildi!");
-            } catch (hata) {
-                console.error("Veri kaydedilirken bir hata oluştu: ", hata);
-                alert("Bir hata oluştu, konsolu kontrol et.");
-            }
-        });
-        
-    </script>
-
-</body>
-</html>
+            // Başarılı olunca kutuları boşalt
+            adInput.value = "";
+            emailInput.value = "";
+            takimInput.value = "";
+            
+            alert("Harika! Bilgiler Firebase'e başarıyla uçtu!");
+        } catch (hata) {
+            alert("Gönderilemedi! Hata: " + hata.message);
+        }
+    });
+</script>
